@@ -31,9 +31,9 @@ func += 'if (level < ' + level + ') return;';
 prov.forEach(function (item) {
   func += 'if (level, provider === "'
        + item
-       + '") return log("%s : %s", provider, args);';
+       + '") return log(name(level), provider, args.join(" "));';
 });
-if (prov.length == 0) func += 'log("%s : %s", provider, args);';
+if (prov.length == 0) func += 'log(provider, args.join(" "));';
 func += '}';
 
 req.write(func);

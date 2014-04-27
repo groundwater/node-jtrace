@@ -7,24 +7,4 @@ if (fs.existsSync('.jtrace.sock')) fs.unlinkSync('.jtrace.sock')
 
 jtrace.start('.jtrace.sock')
 
-console.log = function (a0, a1, a2) {
-  jtrace.emit(0, a0, a1, a2);
-};
-
-console.dir = function (a0, a1, a2) {
-  jtrace.emit(-10, a0, a1, a2);
-};
-
-console.info = function (a0, a1, a2) {
-  jtrace.emit(10, a0, a1, a2);
-};
-
-console.warn = function (a0, a1, a2) {
-  jtrace.emit(20, a0, a1, a2);
-};
-
-console.error = function (a0, a1, a2) {
-  jtrace.emit(30, a0, a1, a2);
-};
-
 require(process.cwd() + '/' + process.argv[2])
