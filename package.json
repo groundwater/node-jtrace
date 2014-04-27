@@ -14,7 +14,8 @@
   },
   "dependencies": {
     "lib-stream-solidify": "^0.1.0",
-    "lib-stream-liquify": "0.0.1"
+    "lib-stream-liquify": "0.0.1",
+    "minimist": "0.0.8"
   },
   "directories": {
     "test": "test",

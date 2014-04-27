@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-var http = require('http')
+var argv = require('minimist')(process.argv.slice(2));
+var http = require('http');
 
 var req = http.request({
   socketPath: '.jtrace.sock',
@@ -9,11 +10,31 @@ var req = http.request({
   }
 }, function(res){
   res.pipe(process.stdout);
-})
+});
 
-var capture = function (tracer, arg) {
-  this.log("%s --> %s", tracer, arg)
-}
+var level = parseInt(argv.level || 10, 10)
 
-req.write(capture.toString());
-req.end()
+if (argv.fatal) level =  50;
+if (argv.error) level =  30;
+if (argv.warn)  level =  20;
+if (argv.info)  level =  10;
+if (argv.log)   level =   0;
+if (argv.debug) level = -10;
+if (argv.trace) level = -50;
+
+var prov = argv.p || [];
+if (!Array.isArray(prov)) prov = [prov];
+var func = '';
+
+func += 'function (level, provider, args) {';
+func += 'if (level < ' + level + ') return;';
+prov.forEach(function (item) {
+  func += 'if (level, provider === "'
+       + item
+       + '") return log("%s : %s", provider, args);';
+});
+if (prov.length == 0) func += 'log("%s : %s", provider, args);';
+func += '}';
+
+req.write(func);
+req.end();

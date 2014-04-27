@@ -1,38 +1,43 @@
 'use strict';
 
-var http = require('http');
+var http  = require('http');
 var solid = require('lib-stream-solidify');
-var vm = require('vm');
+var vm    = require('vm');
+var util  = require('util');
 
 function JTracer() {
-  this.func = null;
+  this.tracer = null;
 }
 
-JTracer.prototype.emit = function (vector, items) {
+JTracer.prototype.emit = function (level, vector, items) {
   if (this.tracer) {
-    this.tracer.func(vector, items);
+    this.tracer.trace(level, vector, items);
   }
 };
 
 JTracer.prototype.start = function (path) {
   var self = this;
   http.createServer(function (req, res) {
-    var obs = {
+
+    var sbox = {
       log: function(){
-        var x = require('util').format.apply(null, arguments);
-        res.write(JSON.stringify(x) + '\n');
+        var x = util.format.apply(null, arguments);
+        res.write(x + '\n');
       }
     };
 
-    var context = vm.createContext(obs);
+    var context = vm.createContext(sbox);
+
     solid(req).text(function (err, src) {
-      vm.runInContext('func = ' + src, context);
-      obs.func = context.func;
-      self.tracer = obs;
+      vm.runInContext('trace = ' + src, context);
+      sbox.trace  = context.trace;
+      self.tracer = sbox;
     });
+
     req.on('close', function(){
-      self.func = undefined;
+      self.trace = undefined;
     });
+
   }).listen(path);
 };
 

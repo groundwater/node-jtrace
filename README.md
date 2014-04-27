@@ -7,17 +7,15 @@
 ### write your app `demo.js`
 
 ```javascript
-var jtrace = require('jtrace');
-
 var i = 0;
 setInterval(function(){
-  jtrace.emit('timer', "Item number" + i++);
+  console.log('timer', "Item number" + i++);
 }, 1000)
 ```
 
 ### start your process with `jrun`
 
-The `jrun` command creates an IPC channel over a unix http socket.
+The `jrun` command intercepts `console.log` commands.
 
 ```bash
 $ jrun demo.js
@@ -25,8 +23,12 @@ $ jrun demo.js
 
 ### dynamically log with `jtrace`
 
-The `jtrace` command should be run in the same directory as `jrun`.
+The `jtrace` command will inject a logging function in place of `console.log`.
 
 ```bash
+# print logs at info level or higher
 $ jtrace
+
+# print logs at debug level or higher
+$ jtrace --debug
 ```
