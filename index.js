@@ -81,7 +81,7 @@ JTracer.prototype.start = function (path) {
     var context = vm.createContext(sbox);
 
     solid(req).text(function (err, src) {
-      vm.runInContext('trace = ' + src, context);
+      vm.runInContext("trace =" + src, context);
       sbox.trace  = context.trace;
       self.tracer = sbox;
     });

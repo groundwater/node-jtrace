@@ -33,8 +33,19 @@ prov.forEach(function (item) {
        + item
        + '") return log(name(level), provider, args.join(" "));';
 });
-if (prov.length == 0) func += 'log(provider, args.join(" "));';
+if (prov.length == 0) func += 'log(name(level), provider, args.join(" "));';
 func += '}';
 
-req.write(func);
+// req.write(func);
+
+function f(level, provider, args) {
+  if (level !== -10) return;
+
+  var probe  = args[0]
+  var handle = args[1]
+
+  if (probe === 'begin') return handle._start = Date.now()
+  if (probe === 'end') return log("duration: " + handle.url + " (" + String(Date.now() - handle._start) + ')')
+}
+req.write(f.toString())
 req.end();

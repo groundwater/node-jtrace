@@ -1,4 +1,4 @@
-var jtrace = require('./index.js')
+var jtrace = require('../index.js')
 
 var mod1 = jtrace.get('mod1')
 var mod2 = jtrace.get('mod2')
