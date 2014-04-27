@@ -1,0 +1,31 @@
+{
+  "name": "jtrace",
+  "version": "0.0.0",
+  "description": "dynamic code execution for live tracing",
+  "main": "index.js",
+  "scripts": {
+    "test": "jshint index.js && tap test"
+  },
+  "author": "Jacob Groundwater <groundwater@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "tap": "^0.4.8",
+    "jshint": "^2.5.0"
+  },
+  "dependencies": {
+    "lib-stream-solidify": "^0.1.0",
+    "lib-stream-liquify": "0.0.1"
+  },
+  "directories": {
+    "test": "test",
+    "bin": "bin"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/groundwater/node-jtrace.git"
+  },
+  "bugs": {
+    "url": "https://github.com/groundwater/node-jtrace/issues"
+  },
+  "homepage": "https://github.com/groundwater/node-jtrace"
+}

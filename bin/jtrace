@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+
+var http = require('http')
+
+var req = http.request({
+  socketPath: '.jtrace.sock',
+  headers: {
+    'Transfer-Encoding': 'chunked'
+  }
+}, function(res){
+  res.pipe(process.stdout);
+})
+
+var capture = function (tracer, arg) {
+  this.log("%s --> %s", tracer, arg)
+}
+
+req.write(capture.toString());
+req.end()

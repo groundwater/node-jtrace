@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var jtrace = require('../index.js');
+
+if (fs.existsSync('.jtrace.sock')) fs.unlinkSync('.jtrace.sock')
+jtrace.start('.jtrace.sock')
+
+require(process.cwd() + '/' + process.argv[2])
