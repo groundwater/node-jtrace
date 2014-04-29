@@ -1,9 +1,13 @@
-module.exports = function (level, provider, args) {
-  if (level !== -10) return;
+module.exports = function (facets, req) {
+  var target = facets.target;
 
-  var probe  = args[0]
-  var handle = args[1]
+  switch (target) {
+  case 'begin':
+    req._start = Date.now();
+    break;
+  case 'end':
+    console.log('request:', req.url, Date.now() - req._start);
+    break;
+  };
 
-  if (probe === 'begin') return handle._start = Date.now()
-  if (probe === 'end') return log("duration: " + handle.url + " (" + String(Date.now() - handle._start) + ')')
-}
+};

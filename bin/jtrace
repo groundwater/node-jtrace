@@ -2,7 +2,11 @@
 
 var argv = require('minimist')(process.argv.slice(2));
 var http = require('http');
-var url  = require('url')
+var url  = require('url');
+var tty  = require('tty');
+
+if (tty.isatty(process.stdin))
+  throw 'need a script on STDIN';
 
 var level = parseInt(argv.level || 10, 10)
 

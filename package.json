@@ -9,13 +9,14 @@
   "author": "Jacob Groundwater <groundwater@gmail.com>",
   "license": "ISC",
   "devDependencies": {
-    "tap": "^0.4.8",
+    "tap": "^0.4.9",
     "jshint": "^2.5.0"
   },
   "dependencies": {
     "lib-stream-solidify": "^0.1.0",
     "lib-stream-liquify": "0.0.1",
-    "minimist": "0.0.8"
+    "minimist": "0.0.8",
+    "lib-trace": "^0.1.0"
   },
   "directories": {
     "test": "test",
