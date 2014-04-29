@@ -3,11 +3,15 @@
 var fs     = require('fs');
 var http   = require('http');
 var util   = require('util');
+var parse  = require('url').parse;
 var vm     = require('vm');
 var solid  = require('lib-stream-solidify');
 var jtrace = require('../index.js');
 
+function yes() { return true; }
+
 var server = http.createServer(function (req, res) {
+  var query = parse(req.url, true).query;
 
   // intercept console.log statements and send to client
   var write = function () {
@@ -30,7 +34,7 @@ var server = http.createServer(function (req, res) {
     vm.runInContext(src, context);
 
     // set handler
-    jtrace.jtrace.on(null, context.exports);
+    jtrace.jtrace.on(yes, context.exports);
 
   });
 
