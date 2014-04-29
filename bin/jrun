@@ -48,4 +48,10 @@ var server = http.createServer(function (req, res) {
 if (fs.existsSync('.jtrace.sock')) fs.unlinkSync('.jtrace.sock')
 server.listen('.jtrace.sock');
 
-require(process.cwd() + '/' + process.argv[2])
+var app = process.argv[2];
+
+if (app) require(process.cwd() + '/' + app);
+else {
+  console.error('App Required');
+  process.exit(1)
+}
