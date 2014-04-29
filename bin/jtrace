@@ -2,15 +2,7 @@
 
 var argv = require('minimist')(process.argv.slice(2));
 var http = require('http');
-
-var req = http.request({
-  socketPath: '.jtrace.sock',
-  headers: {
-    'Transfer-Encoding': 'chunked'
-  }
-}, function(res){
-  res.pipe(process.stdout);
-});
+var url  = require('url')
 
 var level = parseInt(argv.level || 10, 10)
 
@@ -22,30 +14,26 @@ if (argv.log)   level =   0;
 if (argv.debug) level = -10;
 if (argv.trace) level = -50;
 
-var prov = argv.p || [];
-if (!Array.isArray(prov)) prov = [prov];
-var func = '';
+if (!argv.p) argv.p = [];
+if (!Array.isArray(argv.p)) argv.p = [argv.p];
 
-func += 'function (level, provider, args) {';
-func += 'if (level < ' + level + ') return;';
-prov.forEach(function (item) {
-  func += 'if (level, provider === "'
-       + item
-       + '") return log(name(level), provider, args.join(" "));';
+var providers = argv.p.join(',');
+var path = url.format({
+  pathname: '/',
+  query: {
+    level: level,
+    providers: providers,
+  },
 });
-if (prov.length == 0) func += 'log(name(level), provider, args.join(" "));';
-func += '}';
 
-// req.write(func);
+var req = http.request({
+  socketPath: '.jtrace.sock',
+  headers: {
+    'Transfer-Encoding': 'chunked'
+  },
+  path: path,
+}, function(res){
+  res.pipe(process.stdout);
+});
 
-function f(level, provider, args) {
-  if (level !== -10) return;
-
-  var probe  = args[0]
-  var handle = args[1]
-
-  if (probe === 'begin') return handle._start = Date.now()
-  if (probe === 'end') return log("duration: " + handle.url + " (" + String(Date.now() - handle._start) + ')')
-}
-req.write(f.toString())
-req.end();
+process.stdin.pipe(req);

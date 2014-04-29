@@ -10,25 +10,25 @@ function noise() {
 }
 
 setInterval(function(){
-  mod1.dir(noise());
+  mod1.dir('interval1', noise());
 }, 10)
 
 setInterval(function(){
-  mod1.log(noise());
+  mod1.log('interval2', noise());
 }, 40)
 
 setInterval(function(){
-  mod1.info(noise());
+  mod1.info('interval3', noise());
 }, 100)
 
 setInterval(function(){
-  mod1.warn(noise());
+  mod1.warn('interval4', noise());
 }, 200)
 
 setInterval(function(){
-  mod1.error(noise().substr(0,50) + 'ERROR' + noise().substr(0,45));
+  mod1.error('interval5', noise().substr(0,50) + 'ERROR' + noise().substr(0,45));
 }, 500)
 
 setInterval(function () {
-  mod2.error(noise());
+  mod2.error('interval6', noise());
 }, 5)

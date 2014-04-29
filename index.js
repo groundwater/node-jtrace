@@ -4,6 +4,7 @@ var http  = require('http');
 var solid = require('lib-stream-solidify');
 var vm    = require('vm');
 var util  = require('util');
+var url   = require('url');
 
 function JTracer() {
   this.tracer = null;
@@ -77,12 +78,16 @@ JTracer.prototype.start = function (path) {
         else return ''
       }
     };
+    sbox.module = sbox;
 
     var context = vm.createContext(sbox);
+    var query = url.parse(req.url, true).query;
+
+    query.providers = query.providers ? query.providers.split(',') : [];
 
     solid(req).text(function (err, src) {
-      vm.runInContext("trace =" + src, context);
-      sbox.trace  = context.trace;
+      vm.runInContext(src, context);
+      sbox.trace  = context.exports.bind(query);
       self.tracer = sbox;
     });
 
