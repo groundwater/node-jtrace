@@ -2,7 +2,7 @@ var jtrace = require('../index.js')
 var http = require('http');
 
 var server = http.createServer(function (req, res) {
-  jtrace.log('Request: ' + req.url)
+  jtrace.log('request: ' + req.url)
   jtrace.dir('begin', req)
   setTimeout(function(){
     jtrace.dir('end', req)

@@ -9,6 +9,7 @@ var solid  = require('lib-stream-solidify');
 var probe  = require('../index.js');
 
 function yes() { return true; }
+function nop() {}
 
 var server = http.createServer(function (req, res) {
   var query = parse(req.url, true).query;
@@ -17,6 +18,8 @@ var server = http.createServer(function (req, res) {
   var write = function () {
     res.write(util.format.apply(null, arguments) + '\n');
   };
+
+  var end;
 
   solid(req).text(function (err, src) {
     var module  = {
@@ -33,13 +36,21 @@ var server = http.createServer(function (req, res) {
     var context = vm.createContext(module);
     vm.runInContext(src, context);
 
+    var filter = context.exports.filter || yes;
+    var event  = context.exports.event  || nop;
+    var begin  = context.exports.begin  || nop;
+        end    = context.exports.end    || nop;
+
     // set handler
-    probe.tracer.on(yes, context.exports.bind(query));
+    probe.tracer.on(filter, event.bind(query));
+
+    begin(query);
   });
 
   // disengage tracing when client disconnects
   req.on('close', function () {
     probe.tracer.clear();
+    end();
   });
 });
 

@@ -1,7 +1,7 @@
-module.exports = function (facets, req) {
-  var target = facets.target;
+module.exports.event = function (facets, req) {
+  var action = facets.action;
 
-  switch (target) {
+  switch (action) {
   case 'begin':
     req._start = Date.now();
     break;

@@ -7,8 +7,9 @@ var url  = require('url');
 var tty  = require('tty');
 var fs   = require('fs');
 
-var script = join(__dirname, '../probes/log.js');
+var script = join(__dirname, '../probes/logger.js');
 
+// use stdin if it's a file, otherwise use the default script
 var input;
 var useStdin = tty.isatty(process.stdin);
 if (useStdin) input = fs.createReadStream(script);

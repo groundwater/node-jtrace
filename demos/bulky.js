@@ -1,7 +1,7 @@
 var jtrace = require('../index.js')
 
-var mod1 = jtrace.segment('mod1')
-var mod2 = jtrace.segment('mod2')
+var mod1 = jtrace.make('mod1')
+var mod2 = jtrace.make('mod2')
 
 var i = 0;
 
