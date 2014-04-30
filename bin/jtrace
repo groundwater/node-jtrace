@@ -7,33 +7,16 @@ var url  = require('url');
 var tty  = require('tty');
 var fs   = require('fs');
 
-var level = parseInt(argv.level || 10, 10)
-
-if (argv.fatal) level =  50;
-if (argv.error) level =  30;
-if (argv.warn)  level =  20;
-if (argv.info)  level =  10;
-if (argv.log)   level =   0;
-if (argv.debug) level = -10;
-if (argv.trace) level = -50;
-
-var script = argv.script || join(__dirname, '../probes/log.js');
+var script = join(__dirname, '../probes/log.js');
 
 var input;
 var useStdin = tty.isatty(process.stdin);
 if (useStdin) input = fs.createReadStream(script);
 else          input = process.stdin;
 
-if (!argv.p) argv.p = [];
-if (!Array.isArray(argv.p)) argv.p = [argv.p];
-
-var providers = argv.p.join(',');
 var path = url.format({
   pathname: '/',
-  query: {
-    level: level,
-    providers: providers,
-  },
+  query: argv,
 });
 
 var req = http.request({

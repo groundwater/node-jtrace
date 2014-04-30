@@ -1,11 +1,11 @@
 'use strict';
 
 var trace  = require('lib-trace');
-var JTrace = trace.JTrace;
 var Tracer = trace.Tracer;
+var Probe  = trace.Probe;
 
 // MODULE GLOBALS
-var jtrace = new JTrace();
-var tracer = Tracer.NewJTracer(jtrace);
+var tracer = new Tracer();
+var probe  = Probe.NewWithTracer(tracer);
 
-module.exports = tracer;
+module.exports = probe;

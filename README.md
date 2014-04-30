@@ -17,41 +17,99 @@ Probes are designed to be:
 1. *near zero cost* when not in use
 2. *re-usable* across multiple instrumentations
 3. *safe* to use in production
+4. *categorical* for filtering
 
 Use the same probes for logging, debugging, and performance tuning.
 
 ## usage
 
-We add probes to our application in key positions.
-Probes can be filtered during instrumentation,
-so we should provide a *type* and a *value* to each probe.
-
 ```javascript
 var jtrace = require('jtrace');
+var server = http.createServer(function (req, res) {
+  jtrace.dir('request', req);
 
-http.createServer(function (req, res) {
+  setTimeout(function () {
+    jtrace.dir('response', req);
+    res.end('Hello World');
+  }, Math.random() * 1000);
+});
 
-  // `request` is the type
-  // `req` is the value
-  jtrace.log('request', req);
-
-  res.send('Hello World');
-}).listen(8080);
-```
-
-At runtime, we can instrument our application with the following module.
-
-```javascript
-var jtrace = require('jtrace');
-
-jtrace.on('request', function (req) {
-  console.log('request name', req.name);
+server.listen(8080, function () {
+  jtrace.info('start', server);
 });
 ```
 
-The result of which might look like
+These hooks are generic entry-points into your application.
+They can be used for logging, but they can also be used for instrumenting
+and performance tuning.
+
+### use probes for logging
+
+Catch all the probes, and log their *action*
+
+```javascript
+jtrace.on(jtrace.ALL, function (facets, item) {
+  console.log(facets.action);
+});
+```
+
+This might print out:
 
 ```text
-request name /users/bob
-request name /users/joe
+start
+request
+response
+request
+request
+response
+response
 ```
+
+### use probes for instrumenting
+
+#### http response times
+
+Since probes also receive objects,
+you can modify and inspect those objects at runtime.
+
+```javascript
+jtrace.on(jtrace.ALL, function (facets, item) {
+  switch(facet.action) {
+  case 'request':
+    // tag the request start time
+    item._start = Date.now();
+    break;
+  case 'response':
+    // measure the total request latency
+    console.log('%s (%dms)', item.url, Date.now() - item._start);
+    break;
+  }
+});
+```
+
+This might print out:
+
+```text
+/users (500ms)
+/ (2ms)
+/user/bob (1023ms)
+```
+
+#### http request total
+
+```javascript
+
+```
+
+## advanced
+
+Complex instrumentation can be enclosed in a function.
+The function is only called when the probe is enabled.
+
+```javascript
+jtrace.info('complex', function () {
+  return complexCalculation();
+});
+```
+
+Probes with closures are always evaluated synchronously.
