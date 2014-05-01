@@ -2,6 +2,17 @@
 
 > dynamic instrumentation for node.js
 
+## install
+
+```bash
+npm install --save jtrace
+```
+
+Once you've instrumented your application with `jtrace` probes,
+you can use `jrun` and `jtrace` for dynamic runtime instrumentation.
+
+## design
+
 The `jtrace` module has two beliefs:
 
 1. applications want to be fast
@@ -23,19 +34,34 @@ Use the same probes for logging, debugging, and performance tuning.
 
 ## usage
 
+Once you've instrumented your application with `jtrace` probes,
+start it with the `jrun` command.
+
+```bash
+~/myapp $ jrun my_app.js
+```
+
+In another process try to view the probe events
+
+```bash
+~/myapp $ jtrace
+```
+
+## probes
+
 ```javascript
 var jtrace = require('jtrace');
 var server = http.createServer(function (req, res) {
-  jtrace.dir('request', req);
+  jtrace.dir('request', 'begin', req);
 
   setTimeout(function () {
-    jtrace.dir('response', req);
+    jtrace.dir('request', 'end', req);
     res.end('Hello World');
   }, Math.random() * 1000);
 });
 
 server.listen(8080, function () {
-  jtrace.info('start', server);
+  jtrace.info('server', 'start', server);
 });
 ```
 
@@ -45,24 +71,24 @@ and performance tuning.
 
 ### use probes for logging
 
-Catch all the probes, and log their *action*
+Ultra verbose logging
 
 ```javascript
-jtrace.on(jtrace.ALL, function (facets, item) {
-  console.log(facets.action);
+function yes() {return true;}
+
+jtrace.onEvent(yes, function (facets, item) {
+  console.log(facets.event, facets.order);
 });
 ```
 
 This might print out:
 
 ```text
-start
-request
-response
-request
-request
-response
-response
+server start
+request begin
+request end
+request begin
+request end
 ```
 
 ### use probes for instrumenting
@@ -73,13 +99,15 @@ Since probes also receive objects,
 you can modify and inspect those objects at runtime.
 
 ```javascript
-jtrace.on(jtrace.ALL, function (facets, item) {
-  switch(facet.action) {
-  case 'request':
+jtrace.onEvent(yes, function (facets, item) {
+  if (facets.event !== 'request') return;
+
+  switch(facet.order) {
+  case 'begin':
     // tag the request start time
     item._start = Date.now();
     break;
-  case 'response':
+  case 'end':
     // measure the total request latency
     console.log('%s (%dms)', item.url, Date.now() - item._start);
     break;
@@ -91,14 +119,8 @@ This might print out:
 
 ```text
 /users (500ms)
-/ (2ms)
+/user/kim (2ms)
 /user/bob (1023ms)
-```
-
-#### http request total
-
-```javascript
-
 ```
 
 ## advanced
@@ -107,7 +129,7 @@ Complex instrumentation can be enclosed in a function.
 The function is only called when the probe is enabled.
 
 ```javascript
-jtrace.info('complex', function () {
+jtrace.info('complex', 'begin', function () {
   return complexCalculation();
 });
 ```

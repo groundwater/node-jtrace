@@ -42,7 +42,7 @@ var server = http.createServer(function (req, res) {
         end    = context.exports.end    || nop;
 
     // set handler
-    probe.tracer.on(filter, event.bind(query));
+    probe.tracer.onEvent(filter, event.bind(query));
 
     begin(query);
   });
